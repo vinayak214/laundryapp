@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "jsx": "react-native",
+    "noEmit": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*"]
+    },
+    "types": ["react", "react-native"],
+    "lib": ["esnext"]
+  },
+  "extends": "@tsconfig/react-native/tsconfig.json"
+}
