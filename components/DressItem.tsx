@@ -7,15 +7,15 @@ import { decrementQty, incrementQty } from '../Reducers/ProductReducer';
 
 const DressItem = ({ item }: any) => {
 
-    const cart = useSelector((state:any) => state.cart.cart);
-    console.log("DressItem::", cart);
-
+    const cart          = useSelector((state: any) => state.cart.cart);
     const dispatch: any = useDispatch();
 
     const addItemToCart = () => {
         dispatch(addToCart(item))
         dispatch(incrementQty(item))
     }
+
+
     return (
         <View >
             <Pressable

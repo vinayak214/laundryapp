@@ -11,6 +11,9 @@ import Services from '../components/Services';
 import DressItem from '../components/DressItem';
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from '../Reducers/ProductReducer';
+import { useNavigation } from "@react-navigation/native";
+import { collection, getDoc, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 
 
 
@@ -21,7 +24,12 @@ const HomeScreen = () => {
   const [address, setAddress] = useState(null);
   const product = useSelector((state) => state.product.product);
   const cart = useSelector((state) => state.cart.cart);
+  const total = cart.map((item) => item.quantity * item.price).reduce((curr, prev) => curr + prev, 0);
   const dispatch = useDispatch();
+
+  const navigation = useNavigation();
+
+  const [items,setItems] = useState([]);// values from firbase
 
 
   useEffect(() => {
@@ -67,22 +75,28 @@ const HomeScreen = () => {
       console.warn('Error requesting location permission:', error);
     }
   };
- 
-  useEffect(()=>{
+
+  useEffect(() => {
 
     if (product.length > 0) return;
-         
-    const fetchProducts =()=>{
 
-      services.map((services)=>{
+    const fetchProducts = async() => {
 
-         dispatch(getProducts(services))
-      })
+      const colRef = collection(db,"types");
+      const docsSnap = await getDocs(colRef);
+      docsSnap.forEach((doc) => {
+        items.push(doc.data());
+      });
+      items?.map((service) => dispatch(getProducts(service)));
+
+      // services.map((services) => {
+
+      //   dispatch(getProducts(services))
+      // })
     }
-   fetchProducts();
-  },[])
+    fetchProducts();
+  }, [])
 
-  console.log("PRODUCTS::" +JSON.stringify(product))
   const services = [
     {
       id: "0",
@@ -138,10 +152,10 @@ const HomeScreen = () => {
   const maxLength = 20;
   const firstLine = address?.substring(0, maxLength);
   const secondLine = address?.substring(maxLength);
-  // style={{ backgroundColor: "#F0F0F0"}}
+
   return (
     <>
-      <ScrollView style={{ backgroundColor: "#F0F0F0"}}>
+      <ScrollView style={{ backgroundColor: "#F0F0F0" }}>
         {/* Location and Profile */}
         <View
           style={{ flexDirection: "row", alignItems: "center", padding: 10 }}
@@ -191,6 +205,28 @@ const HomeScreen = () => {
           )}>
         </FlatList>
       </ScrollView>
+      {total > 0 ? (
+        <Pressable
+          style={{
+            backgroundColor: '#088F8F',
+            flexDirection: 'row',
+            padding: 10,
+            margin: 15,
+            borderRadius: 7,
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}>
+          <View>
+            <Text style={{ fontWeight: 600, color: 'white' }}>{cart.length} items | {total} </Text>
+            <Text style={{ fontWeight: 400, color: 'white' }}>Extra Charges may Apply!</Text>
+          </View>
+          <Pressable
+            onPress={() => navigation.navigate("Pick")} >
+            <Text style={{ fontSize: 15, fontWeight: "600", color: "white" }}>Proceed to pickup</Text>
+          </Pressable>
+        </Pressable>
+      ) : (
+        null)}
     </>
   );
 }

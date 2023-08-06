@@ -48,7 +48,7 @@ const Services = () => {
 
     return (
         <View>
-            <Text style={{color:'black',fontWeight:'600',margin:20}}>Services Available</Text>
+            <Text style={{ color: 'black', fontWeight: '600', margin: 20 }}>Services Available</Text>
             <FlatList
                 horizontal
                 data={services}
